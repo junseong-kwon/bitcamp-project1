@@ -13,9 +13,13 @@ public class Test01 {
     static void m1() {
       System.out.println("오호라!!");
     }
+    static void m1() {
+      System.out.println("집가고싶다");
+    }
 
     static void m2() {
       System.out.println("수정 잘 되었나요?");
+      System.out.println("OXO O3O");
     }
 
   }
