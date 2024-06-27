@@ -19,7 +19,7 @@ public class Test01 {
 
     static void m2() {
       System.out.println("수정 잘 되었나요?");
-      System.out.println("OXO O3O");
+      System.out.println("저는 삭제후 다시 설치했습니다.");
     }
 
   }
