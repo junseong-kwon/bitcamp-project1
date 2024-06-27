@@ -3,6 +3,7 @@ package bitcamp.project1.command;
 import java.util.ArrayList;
 import bitcamp.project1.util.Prompt;
 import bitcamp.project1.vo.User;
+import bitcamp.project1.util.ExceptionHandler;
 
 public class UserCommand {
   static ArrayList<User> userList = new ArrayList<>();
@@ -17,6 +18,7 @@ public class UserCommand {
         System.out.println("4. 변경");
         System.out.println("5. 삭제");
         System.out.println("9. 이전 메뉴");
+
         int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
 
         switch (menuNo) {
@@ -41,7 +43,7 @@ public class UserCommand {
             System.out.println("올바른 메뉴 번호를 선택하세요.");
         }
       } catch (Exception e) {
-        System.out.printf("오류 발생: %s\n", e.getMessage());
+        ExceptionHandler.handle(e);
       }
     }
   }
@@ -54,8 +56,9 @@ public class UserCommand {
       user.email = Prompt.inputString("이메일? ");
       user.password = Prompt.inputString("비밀번호? ");
       userList.add(user);
+      System.out.println("사용자를 등록했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -66,7 +69,7 @@ public class UserCommand {
             user.no, user.name, user.email);
       }
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -82,7 +85,7 @@ public class UserCommand {
       System.out.printf("이메일: %s\n", user.email);
       System.out.printf("비밀번호: %s\n", user.password);
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -104,7 +107,7 @@ public class UserCommand {
 
       System.out.println("사용자 정보를 변경했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -119,7 +122,7 @@ public class UserCommand {
       userList.remove(user);
       System.out.println("사용자를 삭제했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -131,7 +134,7 @@ public class UserCommand {
         }
       }
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
     return null;
   }

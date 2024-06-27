@@ -16,6 +16,7 @@ public class App {
         System.out.println("3. 사용자");
         System.out.println("4. 가계부");
         System.out.println("0. 종료");
+
         int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
 
         switch (menuNo) {
@@ -39,7 +40,7 @@ public class App {
             System.out.println("올바른 메뉴 번호를 선택하세요.");
         }
       } catch (Exception e) {
-        System.out.printf("오류 발생: %s\n", e.getMessage());
+        bitcamp.project1.util.ExceptionHandler.handle(e);
       }
     }
   }

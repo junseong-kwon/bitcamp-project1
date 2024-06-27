@@ -1,27 +1,66 @@
 package bitcamp.project1.command;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import bitcamp.project1.util.Prompt;
 import bitcamp.project1.vo.Expense;
 import bitcamp.project1.vo.Income;
+import bitcamp.project1.util.ExceptionHandler;
 
 public class FinanceCommand {
   static ArrayList<Expense> expenseList = new ArrayList<>();
   static ArrayList<Income> incomeList = new ArrayList<>();
+  static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
   public static void menu() {
     while (true) {
       try {
         System.out.println("[가계부 메뉴]");
-        System.out.println("1. 지출 등록");
-        System.out.println("2. 지출 목록");
-        System.out.println("3. 지출 변경");
-        System.out.println("4. 지출 삭제");
-        System.out.println("5. 수입 등록");
-        System.out.println("6. 수입 목록");
-        System.out.println("7. 수입 변경");
-        System.out.println("8. 수입 삭제");
+        System.out.println("1. 등록");
+        System.out.println("2. 변경");
+        System.out.println("3. 조회");
+        System.out.println("4. 삭제");
+        System.out.println("5. 총결산");
         System.out.println("9. 이전 메뉴");
+
+        int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
+
+        switch (menuNo) {
+          case 1:
+            registerMenu();
+            break;
+          case 2:
+            updateMenu();
+            break;
+          case 3:
+            viewMenu();
+            break;
+          case 4:
+            deleteMenu();
+            break;
+          case 5:
+            viewTotalSummary();
+            break;
+          case 9:
+            return;
+          default:
+            System.out.println("올바른 메뉴 번호를 선택하세요.");
+        }
+      } catch (Exception e) {
+        ExceptionHandler.handle(e);
+      }
+    }
+  }
+
+  private static void registerMenu() {
+    while (true) {
+      try {
+        System.out.println("[등록 메뉴]");
+        System.out.println("1. 지출 등록");
+        System.out.println("2. 수입 등록");
+        System.out.println("9. 이전 메뉴");
+
         int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
 
         switch (menuNo) {
@@ -29,24 +68,94 @@ public class FinanceCommand {
             addExpense();
             break;
           case 2:
-            listExpenses();
-            break;
-          case 3:
-            updateExpense();
-            break;
-          case 4:
-            deleteExpense();
-            break;
-          case 5:
             addIncome();
             break;
-          case 6:
-            listIncomes();
+          case 9:
+            return;
+          default:
+            System.out.println("올바른 메뉴 번호를 선택하세요.");
+        }
+      } catch (Exception e) {
+        ExceptionHandler.handle(e);
+      }
+    }
+  }
+
+  private static void updateMenu() {
+    while (true) {
+      try {
+        System.out.println("[변경 메뉴]");
+        System.out.println("1. 지출 변경");
+        System.out.println("2. 수입 변경");
+        System.out.println("9. 이전 메뉴");
+
+        int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
+
+        switch (menuNo) {
+          case 1:
+            updateExpense();
             break;
-          case 7:
+          case 2:
             updateIncome();
             break;
-          case 8:
+          case 9:
+            return;
+          default:
+            System.out.println("올바른 메뉴 번호를 선택하세요.");
+        }
+      } catch (Exception e) {
+        ExceptionHandler.handle(e);
+      }
+    }
+  }
+
+  private static void viewMenu() {
+    while (true) {
+      try {
+        System.out.println("[조회 메뉴]");
+        System.out.println("1. 지출 조회");
+        System.out.println("2. 수입 조회");
+        System.out.println("3. 총결산 조회");
+        System.out.println("9. 이전 메뉴");
+
+        int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
+
+        switch (menuNo) {
+          case 1:
+            listExpenses();
+            break;
+          case 2:
+            listIncomes();
+            break;
+          case 3:
+            viewTotalSummary();
+            break;
+          case 9:
+            return;
+          default:
+            System.out.println("올바른 메뉴 번호를 선택하세요.");
+        }
+      } catch (Exception e) {
+        ExceptionHandler.handle(e);
+      }
+    }
+  }
+
+  private static void deleteMenu() {
+    while (true) {
+      try {
+        System.out.println("[삭제 메뉴]");
+        System.out.println("1. 지출 삭제");
+        System.out.println("2. 수입 삭제");
+        System.out.println("9. 이전 메뉴");
+
+        int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
+
+        switch (menuNo) {
+          case 1:
+            deleteExpense();
+            break;
+          case 2:
             deleteIncome();
             break;
           case 9:
@@ -55,7 +164,7 @@ public class FinanceCommand {
             System.out.println("올바른 메뉴 번호를 선택하세요.");
         }
       } catch (Exception e) {
-        System.out.printf("오류 발생: %s\n", e.getMessage());
+        ExceptionHandler.handle(e);
       }
     }
   }
@@ -64,24 +173,90 @@ public class FinanceCommand {
     try {
       Expense expense = new Expense();
       expense.id = Prompt.inputString("ID? ");
-      expense.description = Prompt.inputString("설명? ");
-      expense.amount = Prompt.inputInt("금액? ");
+      expense.amount = parseAmount(Prompt.inputString("금액? "));
       expense.date = System.currentTimeMillis();
       expense.category = Prompt.inputString("카테고리? ");
       expenseList.add(expense);
+      System.out.println("지출 내역을 등록했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
+  }
+
+  public static void addIncome() {
+    try {
+      Income income = new Income();
+      income.id = Prompt.inputString("ID? ");
+      income.amount = parseAmount(Prompt.inputString("금액? "));
+      income.date = System.currentTimeMillis();
+      income.source = Prompt.inputString("출처? ");
+      incomeList.add(income);
+      System.out.println("수입 내역을 등록했습니다.");
+    } catch (Exception e) {
+      ExceptionHandler.handle(e);
+    }
+  }
+
+  private static int parseAmount(String amountStr) {
+    amountStr = amountStr.replace("원", "").replace(",", "").trim();
+    return Integer.parseInt(amountStr);
   }
 
   public static void listExpenses() {
     try {
+      String id = Prompt.inputString("조회할 ID? ");
       for (Expense expense : expenseList) {
-        System.out.printf("%s, %s, %d, %s, %d\n",
-            expense.id, expense.description, expense.amount, expense.category, expense.date);
+        if (expense.id.equals(id)) {
+          System.out.printf("ID: %s, 금액: %d원, 카테고리: %s, 날짜: %s\n",
+              expense.id, expense.amount, expense.category, dateFormat.format(new Date(expense.date)));
+        }
       }
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
+    }
+  }
+
+  public static void listIncomes() {
+    try {
+      String id = Prompt.inputString("조회할 ID? ");
+      for (Income income : incomeList) {
+        if (income.id.equals(id)) {
+          System.out.printf("ID: %s, 금액: %d원, 출처: %s, 날짜: %s\n",
+              income.id, income.amount, income.source, dateFormat.format(new Date(income.date)));
+        }
+      }
+    } catch (Exception e) {
+      ExceptionHandler.handle(e);
+    }
+  }
+
+  public static void viewTotalSummary() {
+    try {
+      String id = Prompt.inputString("ID? ");
+      int totalIncome = 0;
+      int totalExpense = 0;
+
+      for (Income income : incomeList) {
+        if (income.id.equals(id)) {
+          totalIncome += income.amount;
+        }
+      }
+
+      for (Expense expense : expenseList) {
+        if (expense.id.equals(id)) {
+          totalExpense += expense.amount;
+        }
+      }
+
+      int totalBalance = totalIncome - totalExpense;
+
+      if (totalBalance < 0) {
+        System.out.println("불가능합니다.");
+      } else {
+        System.out.printf("총결산: %d원 (수입: %d원, 지출: %d원)\n", totalBalance, totalIncome, totalExpense);
+      }
+    } catch (Exception e) {
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -93,17 +268,35 @@ public class FinanceCommand {
         System.out.println("해당 ID의 지출 내역이 없습니다.");
         return;
       }
-      String description = Prompt.inputString(String.format("설명(%s)? ", expense.description));
-      int amount = Prompt.inputInt(String.format("금액(%d)? ", expense.amount));
+      int amount = parseAmount(Prompt.inputString(String.format("금액(%d원)? ", expense.amount)));
       String category = Prompt.inputString(String.format("카테고리(%s)? ", expense.category));
 
-      expense.description = description.length() > 0 ? description : expense.description;
       expense.amount = amount > 0 ? amount : expense.amount;
       expense.category = category.length() > 0 ? category : expense.category;
 
       System.out.println("지출 내역을 변경했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
+    }
+  }
+
+  public static void updateIncome() {
+    try {
+      String id = Prompt.inputString("ID? ");
+      Income income = findIncomeById(id);
+      if (income == null) {
+        System.out.println("해당 ID의 수입 내역이 없습니다.");
+        return;
+      }
+      int amount = parseAmount(Prompt.inputString(String.format("금액(%d원)? ", income.amount)));
+      String source = Prompt.inputString(String.format("출처(%s)? ", income.source));
+
+      income.amount = amount > 0 ? amount : income.amount;
+      income.source = source.length() > 0 ? source : income.source;
+
+      System.out.println("수입 내역을 변경했습니다.");
+    } catch (Exception e) {
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -118,54 +311,7 @@ public class FinanceCommand {
       expenseList.remove(expense);
       System.out.println("지출 내역을 삭제했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
-    }
-  }
-
-  public static void addIncome() {
-    try {
-      Income income = new Income();
-      income.id = Prompt.inputString("ID? ");
-      income.description = Prompt.inputString("설명? ");
-      income.amount = Prompt.inputInt("금액? ");
-      income.date = System.currentTimeMillis();
-      income.source = Prompt.inputString("출처? ");
-      incomeList.add(income);
-    } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
-    }
-  }
-
-  public static void listIncomes() {
-    try {
-      for (Income income : incomeList) {
-        System.out.printf("%s, %s, %d, %s, %d\n",
-            income.id, income.description, income.amount, income.source, income.date);
-      }
-    } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
-    }
-  }
-
-  public static void updateIncome() {
-    try {
-      String id = Prompt.inputString("ID? ");
-      Income income = findIncomeById(id);
-      if (income == null) {
-        System.out.println("해당 ID의 수입 내역이 없습니다.");
-        return;
-      }
-      String description = Prompt.inputString(String.format("설명(%s)? ", income.description));
-      int amount = Prompt.inputInt(String.format("금액(%d)? ", income.amount));
-      String source = Prompt.inputString(String.format("출처(%s)? ", income.source));
-
-      income.description = description.length() > 0 ? description : income.description;
-      income.amount = amount > 0 ? amount : income.amount;
-      income.source = source.length() > 0 ? source : income.source;
-
-      System.out.println("수입 내역을 변경했습니다.");
-    } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -180,7 +326,7 @@ public class FinanceCommand {
       incomeList.remove(income);
       System.out.println("수입 내역을 삭제했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -192,7 +338,7 @@ public class FinanceCommand {
         }
       }
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
     return null;
   }
@@ -205,7 +351,7 @@ public class FinanceCommand {
         }
       }
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
     return null;
   }

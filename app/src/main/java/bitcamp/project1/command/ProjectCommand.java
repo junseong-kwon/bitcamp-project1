@@ -3,6 +3,7 @@ package bitcamp.project1.command;
 import java.util.ArrayList;
 import bitcamp.project1.util.Prompt;
 import bitcamp.project1.vo.Project;
+import bitcamp.project1.util.ExceptionHandler;
 
 public class ProjectCommand {
   static ArrayList<Project> projectList = new ArrayList<>();
@@ -17,6 +18,7 @@ public class ProjectCommand {
         System.out.println("4. 변경");
         System.out.println("5. 삭제");
         System.out.println("9. 이전 메뉴");
+
         int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
 
         switch (menuNo) {
@@ -41,7 +43,7 @@ public class ProjectCommand {
             System.out.println("올바른 메뉴 번호를 선택하세요.");
         }
       } catch (Exception e) {
-        System.out.printf("오류 발생: %s\n", e.getMessage());
+        ExceptionHandler.handle(e);
       }
     }
   }
@@ -57,8 +59,9 @@ public class ProjectCommand {
       project.startDate = Prompt.inputInt("시작일? ");
       project.endDate = Prompt.inputInt("종료일? ");
       projectList.add(project);
+      System.out.println("프로젝트를 등록했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -69,7 +72,7 @@ public class ProjectCommand {
             project.no, project.title, project.owner, project.members, project.startDate, project.endDate);
       }
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -88,7 +91,7 @@ public class ProjectCommand {
       System.out.printf("시작일: %d\n", project.startDate);
       System.out.printf("종료일: %d\n", project.endDate);
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -116,7 +119,7 @@ public class ProjectCommand {
 
       System.out.println("프로젝트를 변경했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -131,7 +134,7 @@ public class ProjectCommand {
       projectList.remove(project);
       System.out.println("프로젝트를 삭제했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -143,7 +146,7 @@ public class ProjectCommand {
         }
       }
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
     return null;
   }

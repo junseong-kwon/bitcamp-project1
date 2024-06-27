@@ -3,6 +3,7 @@ package bitcamp.project1.command;
 import java.util.ArrayList;
 import bitcamp.project1.util.Prompt;
 import bitcamp.project1.vo.Board;
+import bitcamp.project1.util.ExceptionHandler;
 
 public class BoardCommand {
   static ArrayList<Board> boardList = new ArrayList<>();
@@ -17,6 +18,7 @@ public class BoardCommand {
         System.out.println("4. 변경");
         System.out.println("5. 삭제");
         System.out.println("9. 이전 메뉴");
+
         int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
 
         switch (menuNo) {
@@ -41,7 +43,7 @@ public class BoardCommand {
             System.out.println("올바른 메뉴 번호를 선택하세요.");
         }
       } catch (Exception e) {
-        System.out.printf("오류 발생: %s\n", e.getMessage());
+        ExceptionHandler.handle(e);
       }
     }
   }
@@ -57,19 +59,20 @@ public class BoardCommand {
       board.viewCount = 0;
       board.createdDate = System.currentTimeMillis();
       boardList.add(board);
+      System.out.println("게시글을 등록했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
   public static void list() {
     try {
       for (Board board : boardList) {
-        System.out.printf("%d, %s, %s, %d, %d\n",
-            board.no, board.title, board.writer, board.viewCount, board.createdDate);
+        System.out.printf("%d, %s, %s, %d, %s\n",
+            board.no, board.title, board.writer, board.viewCount, new java.util.Date(board.createdDate));
       }
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -88,7 +91,7 @@ public class BoardCommand {
       System.out.printf("등록일: %s\n", new java.util.Date(board.createdDate));
       board.viewCount++;
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -112,7 +115,7 @@ public class BoardCommand {
 
       System.out.println("게시글을 변경했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -127,7 +130,7 @@ public class BoardCommand {
       boardList.remove(board);
       System.out.println("게시글을 삭제했습니다.");
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
   }
 
@@ -139,7 +142,7 @@ public class BoardCommand {
         }
       }
     } catch (Exception e) {
-      System.out.printf("오류 발생: %s\n", e.getMessage());
+      ExceptionHandler.handle(e);
     }
     return null;
   }
