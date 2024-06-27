@@ -11,7 +11,7 @@ public class Test01 {
     System.out.println(a);
 
     static void m1() {
-      System.out.println("오호라!!!");
+      System.out.println("오호라!!");
     }
 
   }
