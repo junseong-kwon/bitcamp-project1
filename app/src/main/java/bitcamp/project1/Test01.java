@@ -14,6 +14,10 @@ public class Test01 {
       System.out.println("오호라!!");
     }
 
+    static void m2() {
+      System.out.println("수정 잘 되었나요?");
+    }
+
   }
 
 
