@@ -3,19 +3,22 @@ package bitcamp.project1.util;
 import java.util.Scanner;
 
 public class Prompt {
+  static Scanner scanner = new Scanner(System.in);
 
-  static Scanner keyboardScanner = new Scanner(System.in);
-
-  public static String input(String format, Object... args) {
-    System.out.printf(format + " ", args);
-    return keyboardScanner.nextLine();
+  public static String inputString(String title, Object... args) {
+    System.out.printf(title, args);
+    return scanner.nextLine();
   }
 
-  public static int inputInt(String format, Object... args) {
-    return Integer.parseInt(input(format, args));
+  public static int inputInt(String title, Object... args) {
+    return Integer.parseInt(inputString(title, args));
+  }
+
+  public static double inputDouble(String title, Object... args) {
+    return Double.parseDouble(inputString(title, args));
   }
 
   public static void close() {
-    keyboardScanner.close();
+    scanner.close();
   }
 }

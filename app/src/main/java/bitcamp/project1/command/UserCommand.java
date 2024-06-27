@@ -1,94 +1,138 @@
 package bitcamp.project1.command;
 
-import bitcamp.project1.util.LinkedList;
+import java.util.ArrayList;
 import bitcamp.project1.util.Prompt;
 import bitcamp.project1.vo.User;
 
 public class UserCommand {
+  static ArrayList<User> userList = new ArrayList<>();
 
-  LinkedList userList = new LinkedList();
+  public static void menu() {
+    while (true) {
+      try {
+        System.out.println("[사용자 메뉴]");
+        System.out.println("1. 등록");
+        System.out.println("2. 목록");
+        System.out.println("3. 상세보기");
+        System.out.println("4. 변경");
+        System.out.println("5. 삭제");
+        System.out.println("9. 이전 메뉴");
+        int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
 
-  public void executeUserCommand(String command) {
-    System.out.printf("[%s]\n", command);
-    switch (command) {
-      case "등록":
-        addUser();
-        break;
-      case "조회":
-        viewUser();
-        break;
-      case "목록":
-        listUser();
-        break;
-      case "변경":
-        updateUser();
-        break;
-      case "삭제":
-        deleteUser();
-        break;
+        switch (menuNo) {
+          case 1:
+            add();
+            break;
+          case 2:
+            list();
+            break;
+          case 3:
+            detail();
+            break;
+          case 4:
+            update();
+            break;
+          case 5:
+            delete();
+            break;
+          case 9:
+            return;
+          default:
+            System.out.println("올바른 메뉴 번호를 선택하세요.");
+        }
+      } catch (Exception e) {
+        System.out.printf("오류 발생: %s\n", e.getMessage());
+      }
     }
   }
 
-  private void addUser() {
-    User user = new User();
-    user.setName(Prompt.input("이름?"));
-    user.setEmail(Prompt.input("이메일?"));
-    user.setPassword(Prompt.input("암호?"));
-    user.setTel(Prompt.input("연락처?"));
-    user.setNo(User.getNextSeqNo());
-    userList.add(user);
-
-  }
-
-  private void listUser() {
-    System.out.println("번호 이름 이메일");
-    for (Object obj : userList.toArray()) {
-      User user = (User) obj;
-      System.out.printf("%d %s %s\n", user.getNo(), user.getName(), user.getEmail());
+  public static void add() {
+    try {
+      User user = new User();
+      user.no = Prompt.inputInt("번호? ");
+      user.name = Prompt.inputString("이름? ");
+      user.email = Prompt.inputString("이메일? ");
+      user.password = Prompt.inputString("비밀번호? ");
+      userList.add(user);
+    } catch (Exception e) {
+      System.out.printf("오류 발생: %s\n", e.getMessage());
     }
   }
 
-  private void viewUser() {
-    int userNo = Prompt.inputInt("회원번호?");
-    User user = (User) userList.get(userList.indexOf(new User(userNo)));
-    if (user == null) {
-      System.out.println("없는 회원입니다.");
-      return;
-    }
-
-    System.out.printf("이름: %s\n", user.getName());
-    System.out.printf("이메일: %s\n", user.getEmail());
-    System.out.printf("연락처: %s\n", user.getTel());
-  }
-
-  private void updateUser() {
-    int userNo = Prompt.inputInt("회원번호?");
-    User user = (User) userList.get(userList.indexOf(new User(userNo)));
-    if (user == null) {
-      System.out.println("없는 회원입니다.");
-      return;
-    }
-
-    user.setName(Prompt.input("이름(%s)?", user.getName()));
-    user.setEmail(Prompt.input("이메일(%s)?", user.getEmail()));
-    user.setPassword(Prompt.input("암호?"));
-    user.setTel(Prompt.input("연락처(%s)?", user.getTel()));
-    System.out.println("변경 했습니다.");
-  }
-
-  private void deleteUser() {
-    int userNo = Prompt.inputInt("회원번호?");
-    User deletedUser = (User) userList.get(userList.indexOf(new User(userNo)));
-
-    if (deletedUser != null) {
-      userList.remove(userList.indexOf(deletedUser));
-      System.out.printf("'%s' 회원을 삭제 했습니다.\n", deletedUser.getName());
-    } else {
-      System.out.println("없는 회원입니다.");
+  public static void list() {
+    try {
+      for (User user : userList) {
+        System.out.printf("%d, %s, %s\n",
+            user.no, user.name, user.email);
+      }
+    } catch (Exception e) {
+      System.out.printf("오류 발생: %s\n", e.getMessage());
     }
   }
 
-  public LinkedList getUserList() {
-    return userList;
+  public static void detail() {
+    try {
+      int no = Prompt.inputInt("번호? ");
+      User user = findByNo(no);
+      if (user == null) {
+        System.out.println("해당 번호의 사용자가 없습니다.");
+        return;
+      }
+      System.out.printf("이름: %s\n", user.name);
+      System.out.printf("이메일: %s\n", user.email);
+      System.out.printf("비밀번호: %s\n", user.password);
+    } catch (Exception e) {
+      System.out.printf("오류 발생: %s\n", e.getMessage());
+    }
+  }
+
+  public static void update() {
+    try {
+      int no = Prompt.inputInt("번호? ");
+      User user = findByNo(no);
+      if (user == null) {
+        System.out.println("해당 번호의 사용자가 없습니다.");
+        return;
+      }
+      String name = Prompt.inputString(String.format("이름(%s)? ", user.name));
+      String email = Prompt.inputString(String.format("이메일(%s)? ", user.email));
+      String password = Prompt.inputString(String.format("비밀번호(%s)? ", user.password));
+
+      user.name = name.length() > 0 ? name : user.name;
+      user.email = email.length() > 0 ? email : user.email;
+      user.password = password.length() > 0 ? password : user.password;
+
+      System.out.println("사용자 정보를 변경했습니다.");
+    } catch (Exception e) {
+      System.out.printf("오류 발생: %s\n", e.getMessage());
+    }
+  }
+
+  public static void delete() {
+    try {
+      int no = Prompt.inputInt("번호? ");
+      User user = findByNo(no);
+      if (user == null) {
+        System.out.println("해당 번호의 사용자가 없습니다.");
+        return;
+      }
+      userList.remove(user);
+      System.out.println("사용자를 삭제했습니다.");
+    } catch (Exception e) {
+      System.out.printf("오류 발생: %s\n", e.getMessage());
+    }
+  }
+
+  private static User findByNo(int no) {
+    try {
+      for (User user : userList) {
+        if (user.no == no) {
+          return user;
+        }
+      }
+    } catch (Exception e) {
+      System.out.printf("오류 발생: %s\n", e.getMessage());
+    }
+    return null;
   }
 }

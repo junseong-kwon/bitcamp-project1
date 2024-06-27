@@ -1,100 +1,146 @@
 package bitcamp.project1.command;
 
-import bitcamp.project1.util.LinkedList;
+import java.util.ArrayList;
 import bitcamp.project1.util.Prompt;
 import bitcamp.project1.vo.Board;
-import java.util.Date;
-
 
 public class BoardCommand {
+  static ArrayList<Board> boardList = new ArrayList<>();
 
-  LinkedList boardList = new LinkedList();
+  public static void menu() {
+    while (true) {
+      try {
+        System.out.println("[게시판 메뉴]");
+        System.out.println("1. 등록");
+        System.out.println("2. 목록");
+        System.out.println("3. 상세보기");
+        System.out.println("4. 변경");
+        System.out.println("5. 삭제");
+        System.out.println("9. 이전 메뉴");
+        int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
 
-
-  public void executeBoardCommand(String command) {
-    System.out.printf("[%s]\n", command);
-    switch (command) {
-      case "등록":
-        this.addBoard();
-        break;
-      case "조회":
-        this.viewBoard();
-        break;
-      case "목록":
-        this.listBoard();
-        break;
-      case "변경":
-        this.updateBoard();
-        break;
-      case "삭제":
-        this.deleteBoard();
-        break;
-
+        switch (menuNo) {
+          case 1:
+            add();
+            break;
+          case 2:
+            list();
+            break;
+          case 3:
+            detail();
+            break;
+          case 4:
+            update();
+            break;
+          case 5:
+            delete();
+            break;
+          case 9:
+            return;
+          default:
+            System.out.println("올바른 메뉴 번호를 선택하세요.");
+        }
+      } catch (Exception e) {
+        System.out.printf("오류 발생: %s\n", e.getMessage());
+      }
     }
   }
 
-  private void addBoard() {
-    Board board = new Board();
-    board.setTitle(Prompt.input("제목?"));
-    board.setContent(Prompt.input("내용?"));
-    board.setCreatedDate(new Date());
-    board.setNo(Board.getNextSeqNo());
-    boardList.add(board);
-  }
-
-
-  private void listBoard() {
-    System.out.println("번호 제목 작성일 조회수");
-    for (Object obj : boardList.toArray()) {
-      Board board = (Board) obj;
-      System.out.printf("%d %s %ty-%3$tm-%3$td %d\n",
-          board.getNo(), board.getTitle(), board.getCreatedDate(), board.getViewCount());
+  public static void add() {
+    try {
+      Board board = new Board();
+      board.no = Prompt.inputInt("번호? ");
+      board.title = Prompt.inputString("제목? ");
+      board.content = Prompt.inputString("내용? ");
+      board.writer = Prompt.inputString("작성자? ");
+      board.password = Prompt.inputString("암호? ");
+      board.viewCount = 0;
+      board.createdDate = System.currentTimeMillis();
+      boardList.add(board);
+    } catch (Exception e) {
+      System.out.printf("오류 발생: %s\n", e.getMessage());
     }
   }
 
-  private void viewBoard() {
-    int boardNo = Prompt.inputInt("게시글 번호?");
-    Board board = (Board) boardList.get(boardList.indexOf(new Board(boardNo)));
-    if (board == null) {
-      System.out.println("없는 프로젝트입니다.");
-      return;
+  public static void list() {
+    try {
+      for (Board board : boardList) {
+        System.out.printf("%d, %s, %s, %d, %d\n",
+            board.no, board.title, board.writer, board.viewCount, board.createdDate);
+      }
+    } catch (Exception e) {
+      System.out.printf("오류 발생: %s\n", e.getMessage());
     }
-    board.setViewCount(board.getViewCount() + 1);
-    System.out.printf("이름: %s\n", board.getTitle());
-    System.out.printf("내용: %s\n", board.getContent());
-    System.out.printf("작성일: %1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$ts\n", board.getCreatedDate());
-    System.out.printf("조회수:%d\n", board.getViewCount());
   }
 
-  private void updateBoard() {
-    int boardNo = Prompt.inputInt("게시글 번호?");
-
-    Board board = (Board) boardList.get(boardList.indexOf(new Board(boardNo)));
-    if (board == null) {
-      System.out.println("없는 게시글입니다.");
-      return;
+  public static void detail() {
+    try {
+      int no = Prompt.inputInt("번호? ");
+      Board board = findByNo(no);
+      if (board == null) {
+        System.out.println("해당 번호의 게시글이 없습니다.");
+        return;
+      }
+      System.out.printf("제목: %s\n", board.title);
+      System.out.printf("내용: %s\n", board.content);
+      System.out.printf("작성자: %s\n", board.writer);
+      System.out.printf("조회수: %d\n", board.viewCount);
+      System.out.printf("등록일: %s\n", new java.util.Date(board.createdDate));
+      board.viewCount++;
+    } catch (Exception e) {
+      System.out.printf("오류 발생: %s\n", e.getMessage());
     }
-
-    board.setTitle(Prompt.input("제목(%s)?", board.getTitle()));
-    board.setContent(Prompt.input("내용(%s)?", board.getContent()));
-    System.out.println("변경 했습니다.");
   }
 
-  private void deleteBoard() {
-    int boardNo = Prompt.inputInt("게시글 번호?");
-    Board deletedBoard = (Board) boardList.get(boardList.indexOf(new Board(boardNo)));
-    if (deletedBoard != null) {
-      System.out.printf("'%s' 회원을 삭제 했습니다.\n", deletedBoard.getTitle());
-    } else {
-      System.out.println("삭제 했습니다.");
+  public static void update() {
+    try {
+      int no = Prompt.inputInt("번호? ");
+      Board board = findByNo(no);
+      if (board == null) {
+        System.out.println("해당 번호의 게시글이 없습니다.");
+        return;
+      }
+      String title = Prompt.inputString(String.format("제목(%s)? ", board.title));
+      String content = Prompt.inputString(String.format("내용(%s)? ", board.content));
+      String writer = Prompt.inputString(String.format("작성자(%s)? ", board.writer));
+      String password = Prompt.inputString(String.format("암호(%s)? ", board.password));
 
+      board.title = title.length() > 0 ? title : board.title;
+      board.content = content.length() > 0 ? content : board.content;
+      board.writer = writer.length() > 0 ? writer : board.writer;
+      board.password = password.length() > 0 ? password : board.password;
+
+      System.out.println("게시글을 변경했습니다.");
+    } catch (Exception e) {
+      System.out.printf("오류 발생: %s\n", e.getMessage());
     }
-
-
   }
 
+  public static void delete() {
+    try {
+      int no = Prompt.inputInt("번호? ");
+      Board board = findByNo(no);
+      if (board == null) {
+        System.out.println("해당 번호의 게시글이 없습니다.");
+        return;
+      }
+      boardList.remove(board);
+      System.out.println("게시글을 삭제했습니다.");
+    } catch (Exception e) {
+      System.out.printf("오류 발생: %s\n", e.getMessage());
+    }
+  }
+
+  private static Board findByNo(int no) {
+    try {
+      for (Board board : boardList) {
+        if (board.no == no) {
+          return board;
+        }
+      }
+    } catch (Exception e) {
+      System.out.printf("오류 발생: %s\n", e.getMessage());
+    }
+    return null;
+  }
 }
-
-
-
-

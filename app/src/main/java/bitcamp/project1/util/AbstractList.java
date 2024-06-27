@@ -1,12 +1,17 @@
 package bitcamp.project1.util;
 
-// 추상클래스는 추상메서드를 가질 수 있다.
-public abstract class AbstractList implements List { //abstract를 붙이면 인스턴스 생성 불가!!!!
+public abstract class AbstractList {
+  protected int size;
 
-  protected int size = 0; // 같은 패키지와 상속한 클래스는 protected 사용할 수 있다.
-
-  @Override
   public int size() {
     return size;
   }
+
+  public abstract void add(Object obj);
+
+  public abstract Object[] toArray();
+
+  public abstract Object get(int index);
+
+  public abstract boolean remove(Object obj);
 }
