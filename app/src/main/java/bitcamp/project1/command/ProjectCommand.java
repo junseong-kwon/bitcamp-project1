@@ -1,43 +1,34 @@
 package bitcamp.project1.command;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import bitcamp.project1.util.Prompt;
-import bitcamp.project1.vo.Project;
+import bitcamp.project1.vo.Insert;
+import bitcamp.project1.vo.Expense;
 import bitcamp.project1.util.ExceptionHandler;
 
 public class ProjectCommand {
-  static ArrayList<Project> projectList = new ArrayList<>();
 
   public static void menu() {
     while (true) {
       try {
-        System.out.println("[프로젝트 메뉴]");
-        System.out.println("1. 등록");
-        System.out.println("2. 목록");
-        System.out.println("3. 상세보기");
-        System.out.println("4. 변경");
-        System.out.println("5. 삭제");
-        System.out.println("9. 이전 메뉴");
+        System.out.println("[지출 통계 확인하기]");
+        System.out.println("1. 주 단위 내역 보기");
+        System.out.println("2. 월 단위 내역 보기");
+        System.out.println("0. 이전 메뉴");
 
         int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
 
         switch (menuNo) {
           case 1:
-            add();
+            listByWeek();
             break;
           case 2:
-            list();
+            listByMonth();
             break;
-          case 3:
-            detail();
-            break;
-          case 4:
-            update();
-            break;
-          case 5:
-            delete();
-            break;
-          case 9:
+          case 0:
             return;
           default:
             System.out.println("올바른 메뉴 번호를 선택하세요.");
@@ -48,106 +39,62 @@ public class ProjectCommand {
     }
   }
 
-  public static void add() {
+  public static void listByWeek() {
     try {
-      Project project = new Project();
-      project.no = Prompt.inputInt("번호? ");
-      project.title = Prompt.inputString("프로젝트명? ");
-      project.content = Prompt.inputString("내용? ");
-      project.owner = Prompt.inputString("관리자? ");
-      project.members = Prompt.inputString("팀원? ");
-      project.startDate = Prompt.inputInt("시작일? ");
-      project.endDate = Prompt.inputInt("종료일? ");
-      projectList.add(project);
-      System.out.println("프로젝트를 등록했습니다.");
-    } catch (Exception e) {
-      ExceptionHandler.handle(e);
-    }
-  }
+      Calendar calendar = Calendar.getInstance();
+      calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+      Date weekStart = calendar.getTime();
 
-  public static void list() {
-    try {
-      for (Project project : projectList) {
-        System.out.printf("%d, %s, %s, %s, %d, %d\n",
-            project.no, project.title, project.owner, project.members, project.startDate, project.endDate);
+      calendar.add(Calendar.DAY_OF_WEEK, 6);
+      Date weekEnd = calendar.getTime();
+
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+      System.out.printf("주 단위 내역 (%s ~ %s):\n", sdf.format(weekStart), sdf.format(weekEnd));
+      for (Insert insert : InsertCommand.insertList) {
+        if (insert.createdDate >= weekStart.getTime() && insert.createdDate <= weekEnd.getTime()) {
+          System.out.printf("입금 - %d, %s, %s, %d, %s\n",
+                  insert.no, insert.title, insert.writer, insert.viewCount, new java.util.Date(insert.createdDate));
+        }
       }
-    } catch (Exception e) {
-      ExceptionHandler.handle(e);
-    }
-  }
-
-  public static void detail() {
-    try {
-      int no = Prompt.inputInt("번호? ");
-      Project project = findByNo(no);
-      if (project == null) {
-        System.out.println("해당 번호의 프로젝트가 없습니다.");
-        return;
-      }
-      System.out.printf("프로젝트명: %s\n", project.title);
-      System.out.printf("내용: %s\n", project.content);
-      System.out.printf("관리자: %s\n", project.owner);
-      System.out.printf("팀원: %s\n", project.members);
-      System.out.printf("시작일: %d\n", project.startDate);
-      System.out.printf("종료일: %d\n", project.endDate);
-    } catch (Exception e) {
-      ExceptionHandler.handle(e);
-    }
-  }
-
-  public static void update() {
-    try {
-      int no = Prompt.inputInt("번호? ");
-      Project project = findByNo(no);
-      if (project == null) {
-        System.out.println("해당 번호의 프로젝트가 없습니다.");
-        return;
-      }
-      String title = Prompt.inputString(String.format("프로젝트명(%s)? ", project.title));
-      String content = Prompt.inputString(String.format("내용(%s)? ", project.content));
-      String owner = Prompt.inputString(String.format("관리자(%s)? ", project.owner));
-      String members = Prompt.inputString(String.format("팀원(%s)? ", project.members));
-      int startDate = Prompt.inputInt(String.format("시작일(%d)? ", project.startDate));
-      int endDate = Prompt.inputInt(String.format("종료일(%d)? ", project.endDate));
-
-      project.title = title.length() > 0 ? title : project.title;
-      project.content = content.length() > 0 ? content : project.content;
-      project.owner = owner.length() > 0 ? owner : project.owner;
-      project.members = members.length() > 0 ? members : project.members;
-      project.startDate = startDate > 0 ? startDate : project.startDate;
-      project.endDate = endDate > 0 ? endDate : project.endDate;
-
-      System.out.println("프로젝트를 변경했습니다.");
-    } catch (Exception e) {
-      ExceptionHandler.handle(e);
-    }
-  }
-
-  public static void delete() {
-    try {
-      int no = Prompt.inputInt("번호? ");
-      Project project = findByNo(no);
-      if (project == null) {
-        System.out.println("해당 번호의 프로젝트가 없습니다.");
-        return;
-      }
-      projectList.remove(project);
-      System.out.println("프로젝트를 삭제했습니다.");
-    } catch (Exception e) {
-      ExceptionHandler.handle(e);
-    }
-  }
-
-  private static Project findByNo(int no) {
-    try {
-      for (Project project : projectList) {
-        if (project.no == no) {
-          return project;
+      for (Expense expense : ExpenseCommand.expenseList) {
+        if (expense.createdDate >= weekStart.getTime() && expense.createdDate <= weekEnd.getTime()) {
+          System.out.printf("출금 - %d, %s, %s, %s, %d, %s\n",
+                  expense.no, expense.title, expense.content, expense.writer, expense.viewCount, new java.util.Date(expense.createdDate));
         }
       }
     } catch (Exception e) {
       ExceptionHandler.handle(e);
     }
-    return null;
+  }
+
+  public static void listByMonth() {
+    try {
+      Calendar calendar = Calendar.getInstance();
+      calendar.set(Calendar.DAY_OF_MONTH, 1);
+      Date monthStart = calendar.getTime();
+
+      calendar.add(Calendar.MONTH, 1);
+      calendar.add(Calendar.DAY_OF_MONTH, -1);
+      Date monthEnd = calendar.getTime();
+
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+      System.out.printf("월 단위 내역 (%s ~ %s):\n", sdf.format(monthStart), sdf.format(monthEnd));
+      for (Insert insert : InsertCommand.insertList) {
+        if (insert.createdDate >= monthStart.getTime() && insert.createdDate <= monthEnd.getTime()) {
+          System.out.printf("입금 - %d, %s, %s, %d, %s\n",
+                  insert.no, insert.title, insert.writer, insert.viewCount, new java.util.Date(insert.createdDate));
+        }
+      }
+      for (Expense expense : ExpenseCommand.expenseList) {
+        if (expense.createdDate >= monthStart.getTime() && expense.createdDate <= monthEnd.getTime()) {
+          System.out.printf("출금 - %d, %s, %s, %s, %d, %s\n",
+                  expense.no, expense.title, expense.content, expense.writer, expense.viewCount, new java.util.Date(expense.createdDate));
+        }
+      }
+    } catch (Exception e) {
+      ExceptionHandler.handle(e);
+    }
   }
 }

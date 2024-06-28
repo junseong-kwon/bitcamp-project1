@@ -14,9 +14,6 @@ public class Prompt {
     return Integer.parseInt(inputString(title, args));
   }
 
-  public static double inputDouble(String title, Object... args) {
-    return Double.parseDouble(inputString(title, args));
-  }
 
   public static void close() {
     scanner.close();
