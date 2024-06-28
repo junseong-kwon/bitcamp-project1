@@ -1,7 +1,7 @@
 package bitcamp.project1;
 
 import bitcamp.project1.util.Prompt;
-import bitcamp.project1.command.BoardCommand;
+import bitcamp.project1.command.InsertCommand;
 import bitcamp.project1.command.ProjectCommand;
 import bitcamp.project1.command.UserCommand;
 import bitcamp.project1.command.FinanceCommand;
@@ -11,8 +11,8 @@ public class App {
     while (true) {
       try {
         System.out.println("메인 메뉴:");
-        System.out.println("1. 게시판");
-        System.out.println("2. 프로젝트");
+        System.out.println("1. 입력");
+        System.out.println("2. 지출 통계 확인하기");
         System.out.println("3. 사용자");
         System.out.println("4. 가계부");
         System.out.println("0. 종료");
@@ -21,7 +21,7 @@ public class App {
 
         switch (menuNo) {
           case 1:
-            BoardCommand.menu();
+            InsertCommand.menu();
             break;
           case 2:
             ProjectCommand.menu();
