@@ -13,7 +13,7 @@ public class IncomeCommand {
             try {
                 System.out.println("[입금 메뉴]");
                 System.out.println("1. 입금 등록");
-                System.out.println("2. 입금 목록");
+                System.out.println("2. 입금 내역 확인");
                 System.out.println("0. 이전 메뉴");
 
                 int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");

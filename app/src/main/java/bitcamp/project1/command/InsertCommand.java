@@ -14,7 +14,6 @@ public class InsertCommand {
         System.out.println("[입/출금 메뉴]");
         System.out.println("1. 입금");
         System.out.println("2. 출금");
-        System.out.println("3. 최근 내역 확인하기");
         System.out.println("0. 이전 메뉴");
 
         int menuNo = Prompt.inputInt("메뉴를 선택하세요! ");
@@ -25,9 +24,6 @@ public class InsertCommand {
             break;
           case 2:
             ExpenseCommand.menu(); // 지출 메뉴 호출
-            break;
-          case 3:
-            HistoryCommand.menu(); // 최근 내역 확인하기 메뉴 호출
             break;
           case 0:
             return;
