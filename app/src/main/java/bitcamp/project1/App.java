@@ -1,46 +1,109 @@
 package bitcamp.project1;
 
-import bitcamp.project1.command.HistoryCommand;
-import bitcamp.project1.util.Prompt;
-import bitcamp.project1.command.InsertCommand;
-import bitcamp.project1.command.ProjectCommand;
-import bitcamp.project1.command.UserCommand;
+import java.time.LocalDate;
+import java.util.List;
 
 public class App {
-  public static void main(String[] args) {
+  private TransactionManager transactionManager;
+  private InputHandler inputHandler;
+  private Menu menu;
+
+  public App() {
+    transactionManager = new TransactionManager();
+    inputHandler = new InputHandler();
+    menu = new Menu();
+  }
+
+  public void run() {
     while (true) {
-      try {
-        System.out.println("[메인 메뉴] : ");
-        System.out.println("1. 입/출금 입력");
-        System.out.println("2. 지출 통계 확인하기");
-        System.out.println("3. 최근 내역 확인하기");
-        System.out.println("0. 종료");
+      menu.printMenu();
+      int choice = inputHandler.getIntInput("");
 
-        int menuNo = Prompt.inputInt("메뉴를 선택하세요: ");
-
-        switch (menuNo) {
-          case 1:
-            InsertCommand.menu();
-            break;
-          case 2:
-            ProjectCommand.menu();
-            break;
-          case 3:
-            UserCommand.menu();
-            break;
-          case 4:
-            HistoryCommand.menu();
-            break;
-          case 0:
-            System.out.println("가계부를 종료합니다.");
-            Prompt.close();
-            return;
-          default:
-            System.out.println("올바른 메뉴 번호를 선택하세요.");
-        }
-      } catch (Exception e) {
-        bitcamp.project1.util.ExceptionHandler.handle(e);
+      switch (choice) {
+        case 1:
+          addIncome();
+          break;
+        case 2:
+          addExpense();
+          break;
+        case 3:
+          updateTransaction();
+          break;
+        case 4:
+          deleteTransaction();
+          break;
+        case 5:
+          showBalance();
+          break;
+        case 6:
+          showTransactionsByMonth();
+          break;
+        case 0:
+          exit();
+          return;
+        default:
+          System.out.println("잘못된 선택입니다. 다시 시도해주세요.");
       }
     }
+  }
+
+  private void addIncome() {
+    int amount = inputHandler.getIntInput("수입 금액을 입력하세요: ");
+    inputHandler.consumeNewLine(); // 추가된 부분
+    String description = inputHandler.getStringInput("수입 설명을 입력하세요: ");
+    LocalDate date = inputHandler.getDateInput("수입 날짜를 입력하세요: ");
+    transactionManager.addTransaction("수입", description, amount, date);
+  }
+
+  private void addExpense() {
+    int amount = inputHandler.getIntInput("지출 금액을 입력하세요: ");
+    inputHandler.consumeNewLine(); // 추가된 부분
+    String description = inputHandler.getStringInput("지출 설명을 입력하세요: ");
+    LocalDate date = inputHandler.getDateInput("지출 날짜를 입력하세요: ");
+    transactionManager.addTransaction("지출", description, amount, date);
+  }
+
+  private void updateTransaction() {
+    transactionManager.showTransactions();
+    int index = inputHandler.getIntInput("번호를 입력하세요: ") - 1; // 인덱스는 0부터 시작
+    inputHandler.consumeNewLine(); // 추가된 부분
+    String description = inputHandler.getStringInput("새로운 설명을 입력하세요: ");
+    int amount = inputHandler.getIntInput("새로운 금액을 입력하세요: ");
+    try {
+      transactionManager.updateTransaction(index, description, amount);
+    } catch (IndexOutOfBoundsException e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  private void deleteTransaction() {
+    transactionManager.showTransactions();
+    int index = inputHandler.getIntInput("번호를 입력하세요: ") - 1; // 인덱스는 0부터 시작
+    inputHandler.consumeNewLine(); // 추가된 부분
+    try {
+      transactionManager.deleteTransaction(index);
+    } catch (IndexOutOfBoundsException e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  private void showBalance() {
+    System.out.println("현재 잔액: " + transactionManager.getBalance());
+  }
+
+  private void showTransactionsByMonth() {
+    int year = inputHandler.getIntInput("연도를 입력하세요 (예: 2023): ");
+    int month = inputHandler.getIntInput("월을 입력하세요 (1-12): ");
+    List<Transaction> monthlyTransactions = transactionManager.getTransactionsByMonth(year, month);
+    if (monthlyTransactions.isEmpty()) {
+      System.out.println("해당 기간에 거래 내역이 없습니다.");
+    } else {
+      monthlyTransactions.forEach(System.out::println);
+    }
+  }
+
+  private void exit() {
+    System.out.println("프로그램을 종료합니다.");
+    inputHandler.closeScanner();
   }
 }
