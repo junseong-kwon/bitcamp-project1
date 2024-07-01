@@ -6,17 +6,16 @@ import java.util.List;
 public class App {
   private TransactionManager transactionManager;
   private InputHandler inputHandler;
-  private Menu menu;
+
 
   public App() {
     transactionManager = new TransactionManager();
     inputHandler = new InputHandler();
-    menu = new Menu();
   }
 
   public void run() {
     while (true) {
-      menu.printMenu();
+      printMenu();
       int choice = inputHandler.getIntInput("");
 
       switch (choice) {
@@ -51,7 +50,7 @@ public class App {
     int amount = inputHandler.getIntInput("수입 금액을 입력하세요: ");
     inputHandler.consumeNewLine(); // 추가된 부분
     String description = inputHandler.getStringInput("수입 설명을 입력하세요: ");
-    LocalDate date = inputHandler.getDateInput("수입 날짜를 입력하세요: ");
+    LocalDate date = inputHandler.getDateInput("수입 날짜를 입력하세요(yyyy-MM-dd 또는 yyyyMMdd): ");
     transactionManager.addTransaction("수입", description, amount, date);
   }
 
@@ -59,7 +58,7 @@ public class App {
     int amount = inputHandler.getIntInput("지출 금액을 입력하세요: ");
     inputHandler.consumeNewLine(); // 추가된 부분
     String description = inputHandler.getStringInput("지출 설명을 입력하세요: ");
-    LocalDate date = inputHandler.getDateInput("지출 날짜를 입력하세요: ");
+    LocalDate date = inputHandler.getDateInput("지출 날짜를 입력하세요(yyyy-MM-dd 또는 yyyyMMdd): ");
     transactionManager.addTransaction("지출", description, amount, date);
   }
 
@@ -105,5 +104,15 @@ public class App {
   private void exit() {
     System.out.println("프로그램을 종료합니다.");
     inputHandler.closeScanner();
+  }
+  public static void main(String[] args) {
+    App app = new App();
+    app.run();
+  }
+  public void printMenu() {
+    System.out.println("1. 수입 추가 | 2. 지출 추가 | 3. 거래 수정");
+    System.out.println("4. 거래 삭제 | 5. 잔액 확인 | 6. 거래 내역 확인");
+    System.out.println("0. 종료");
+    System.out.print("메뉴를 선택하세요: ");
   }
 }
