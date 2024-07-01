@@ -52,6 +52,7 @@ public class App {
     String description = inputHandler.getStringInput("수입 설명을 입력하세요: ");
     LocalDate date = inputHandler.getDateInput("수입 날짜를 입력하세요(yyyy-MM-dd 또는 yyyyMMdd): ");
     transactionManager.addTransaction("수입", description, amount, date);
+    System.out.println("수입 추가되었습니다!");
   }
 
   private void addExpense() {
@@ -60,7 +61,9 @@ public class App {
     String description = inputHandler.getStringInput("지출 설명을 입력하세요: ");
     LocalDate date = inputHandler.getDateInput("지출 날짜를 입력하세요(yyyy-MM-dd 또는 yyyyMMdd): ");
     transactionManager.addTransaction("지출", description, amount, date);
+    System.out.println("지출 추가되었습니다!");
   }
+
 
   private void updateTransaction() {
     transactionManager.showTransactions();
@@ -68,6 +71,7 @@ public class App {
     inputHandler.consumeNewLine(); // 추가된 부분
     String description = inputHandler.getStringInput("새로운 설명을 입력하세요: ");
     int amount = inputHandler.getIntInput("새로운 금액을 입력하세요: ");
+    System.out.println("수정되었습니다!");
     try {
       transactionManager.updateTransaction(index, description, amount);
     } catch (IndexOutOfBoundsException e) {
@@ -79,6 +83,7 @@ public class App {
     transactionManager.showTransactions();
     int index = inputHandler.getIntInput("번호를 입력하세요: ") - 1; // 인덱스는 0부터 시작
     inputHandler.consumeNewLine(); // 추가된 부분
+    System.out.println("삭제되었습니다!");
     try {
       transactionManager.deleteTransaction(index);
     } catch (IndexOutOfBoundsException e) {
